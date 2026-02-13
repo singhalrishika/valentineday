@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Valentine Puzzle 💘</title>
+
+<style>
+body{
+    font-family:Arial;
+    text-align:center;
+    background:#ffdde1;
+    overflow:hidden;
+}
+
+/* ❤️ floating hearts */
+.heart{
+    position:fixed;
+    bottom:-20px;
+    font-size:20px;
+    animation:floatUp 6s linear infinite;
+}
+
+@keyframes floatUp{
+    0%{transform:translateY(0);opacity:1;}
+    100%{transform:translateY(-110vh);opacity:0;}
+}
+
+#board{
+    width:300px;
+    height:300px;
+    margin:auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:2px;
+}
+
+.tile{
+    width:100px;
+    height:100px;
+    border:2px solid white;
+    background-image:url("couple.jpeg");
+    background-size:300px 300px;
+    cursor:pointer;
+}
+
+.empty{
+    background:none;
+    border:none;
+}
+
+#message{
+    display:none;
+    margin-top:20px;
+    font-size:26px;
+    color:#c9184a;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>💖 Solve Our Love Puzzle 💖</h1>
+<div id="board"></div>
+<div id="message">YES ❤️ You Are My Valentine 💘</div>
+
+<script>
+
+let board=document.getElementById("board");
+let message=document.getElementById("message");
+
+let tiles=[0,1,2,3,4,5,6,7,8];
+
+function shuffle(){
+    for(let i=tiles.length-1;i>0;i--){
+        let j=Math.floor(Math.random()*(i+1));
+        [tiles[i],tiles[j]]=[tiles[j],tiles[i]];
+    }
+}
+
+function draw(){
+    board.innerHTML="";
+    tiles.forEach((num,index)=>{
+        let div=document.createElement("div");
+
+        if(num===8){
+            div.classList.add("empty");
+        }else{
+            div.classList.add("tile");
+
+            let x=(num%3)*100;
+            let y=Math.floor(num/3)*100;
+            div.style.backgroundPosition=`-${x}px -${y}px`;
+
+            div.onclick=()=>move(index);
+        }
+
+        board.appendChild(div);
+    });
+}
+
+function isAdjacent(i,empty){
+    let row=Math.floor(i/3);
+    let col=i%3;
+    let erow=Math.floor(empty/3);
+    let ecol=empty%3;
+
+    return(
+        (row===erow && Math.abs(col-ecol)===1) ||
+        (col===ecol && Math.abs(row-erow)===1)
+    );
+}
+
+function move(i){
+    let emptyIndex=tiles.indexOf(8);
+
+    if(isAdjacent(i,emptyIndex)){
+        [tiles[i],tiles[emptyIndex]]=[tiles[emptyIndex],tiles[i]];
+        draw();
+        checkWin();
+    }
+}
+
+function checkWin(){
+    for(let i=0;i<tiles.length;i++){
+        if(tiles[i]!==i) return;
+    }
+    message.style.display="block";
+}
+
+/* ❤️ floating hearts generator */
+function createHeart(){
+    let heart=document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML="❤️";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.animationDuration=(4+Math.random()*3)+"s";
+    document.body.appendChild(heart);
+
+    setTimeout(()=>heart.remove(),7000);
+}
+
+setInterval(createHeart,500);
+
+shuffle();
+draw();
+
+</script>
+
+</body>
+</html>
